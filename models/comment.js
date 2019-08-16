@@ -12,7 +12,11 @@ mongoose.connect('mongodb://localhost/test',{useNewUrlParser:true},function(err)
 var Schema = mongoose.Schema
 
 var userSchema = new Schema({
-  title: {
+  id: {
+    type: String,
+    required: true
+  },
+  nickname: {
     type: String,
     required: true
   },
@@ -26,4 +30,4 @@ var userSchema = new Schema({
   }
 })
 
-module.exports = mongoose.model('Blog', userSchema)
+module.exports = mongoose.model('Comment', userSchema)
