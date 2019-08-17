@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost/test',{useNewUrlParser:true},function(err)
 var Schema = mongoose.Schema
 
 var userSchema = new Schema({
-  username: {
+  account: {
     type: String,
     required: true
   },
@@ -23,6 +23,14 @@ var userSchema = new Schema({
   created_time: {
     type: Date,
     default: Date.now
+  },
+  status: {
+    type: Number,
+    // 0 没有权限限制
+    // 1 不可以评论
+    // 2 不可以登录
+    enum: [0, 1, 2],
+    default: 0
   }
 })
 
