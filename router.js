@@ -4,16 +4,67 @@ const Blog = require('./models/blog')
 const Comment = require('./models/comment')
 const MessageBoard = require('./models/messageboard')
 
+var md5 = require('blueimp-md5')
 
 const router = express.Router()
 // =========================================================注册,登录部分==================================================================
 // 注册
 router.post('/api/register', function (req, res, next) {
   const body = req.body
- 
-  new User(body).save(function (err, user) {
+  // body.password = md5(body.password)
+
+  User.findOne({ account: body.account, password: body.password },function (err, data) {
     if (err) {
       return next(err)
+    }
+
+    if(data) {
+      return res.status(200).json({
+        err_code: 1,
+        message: '帐号已存在'
+      })
+    }
+    new User(body).save(function (err, user) {
+      if (err) {
+        return next(err)
+      }
+      
+
+      res.status(200).json({
+        err_code: 0,
+        message: 'OK'
+      })
+    })
+  })
+
+  
+  
+})
+
+// 获得帐号所有信息->包括权限
+router.post('/api/getaccount', function (req, res, next) {
+
+  User.find(function (err, data) {
+    if (err) {
+      return next(err)
+    }
+
+    res.status(200).json({
+      err_code: 0,
+      message: 'OK',
+      data: data
+    })
+  })
+})
+
+// 删除用户
+router.post('/api/deleteaccount',function(req,res,nect){
+
+  const id = req.body.id
+
+  User.remove({_id: id}, (err,i) => {
+    if(err) {
+      return res.status(500).send('Server error.')
     }
     res.status(200).json({
       err_code: 0,
@@ -22,23 +73,50 @@ router.post('/api/register', function (req, res, next) {
   })
 })
 
+
+
 // 登录
 router.post('/api/login', function (req, res, next) {
   const body = req.body
- 
-  User.find({
+  User.findOne({
     account: body.account,
     password: body.password
   }, function (err, user) {
     if (err) {
       return next(err)
     }
+    // 如果不存在帐号密码
+    if (!user) {
+      return res.status(200).json({
+        err_code: 1,
+        message: '帐号或密码不存在'
+      })
+    }
+    req.session.user = user
+    // console.log(req.session.user)
     res.status(200).json({
       err_code: 0,
       message: 'OK'
     })
   })
 })
+
+// 判断是否登录
+router.post('/api/judgelogin', function (req, res, next) {
+ 
+    if(req.session.user){
+      return res.status(200).json({
+        err_code: 0,
+        message: 'OK'
+      })
+    }
+    res.status(200).json({
+      err_code: 1,
+      message: '没登录'
+    })
+    
+})
+
 
 
 // =========================================================文章部分==================================================================

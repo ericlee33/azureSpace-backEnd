@@ -26,9 +26,9 @@ var userSchema = new Schema({
   },
   status: {
     type: Number,
-    // 0 没有权限限制
-    // 1 不可以评论
-    // 2 不可以登录
+    // 0 只可以评论不能进后台
+    // 1 
+    // 2 全都可以
     enum: [0, 1, 2],
     default: 0
   }
