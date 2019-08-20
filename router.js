@@ -4,10 +4,9 @@ const Blog = require('./models/blog')
 const Comment = require('./models/comment')
 const MessageBoard = require('./models/messageboard')
 
-var md5 = require('blueimp-md5')
-
 const router = express.Router()
 // =========================================================注册,登录部分==================================================================
+
 // 注册
 router.post('/api/register', function (req, res, next) {
   const body = req.body
@@ -37,8 +36,6 @@ router.post('/api/register', function (req, res, next) {
     })
   })
 
-  
-  
 })
 
 // 获得帐号所有信息->包括权限
@@ -92,30 +89,15 @@ router.post('/api/login', function (req, res, next) {
         message: '帐号或密码不存在'
       })
     }
-    req.session.user = user
     // console.log(req.session.user)
     res.status(200).json({
       err_code: 0,
-      message: 'OK'
+      message: 'OK',
+      user: user
     })
   })
 })
 
-// 判断是否登录
-router.post('/api/judgelogin', function (req, res, next) {
- 
-    if(req.session.user){
-      return res.status(200).json({
-        err_code: 0,
-        message: 'OK'
-      })
-    }
-    res.status(200).json({
-      err_code: 1,
-      message: '没登录'
-    })
-    
-})
 
 
 
@@ -188,21 +170,6 @@ router.post('/api/deleteblog',function(req,res,nect){
     })
   })
 })
-
-// router.get('/api/getblog/:id',function(req,res,next){
-//   var body = req.body
-//   // console.log(body)
- 
-//   new Blog(body).save(function (err, user) {
-//     if (err) {
-//       return next(err)
-//     }
-//     res.status(200).json({
-//       err_code: 0,
-//       message: 'OK'
-//     })
-//   })
-// })
 
 // 前端请求文章具体数据
 router.get('/api/getblog/:id', (req,res,next) =>{
@@ -304,9 +271,9 @@ router.post('/api/addmessageboard',function(req,res,next){
   })
 })
 
-router.post('/api/deletemessageboard/:id',function(req,res,next){
+router.post('/api/deletemessageboard',function(req,res,next){
 
-  const id = req.params.id
+  const id = req.body.id
   // console.log(id)
 
   MessageBoard.remove({_id:id}, (err, data) => {
