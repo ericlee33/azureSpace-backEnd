@@ -10,7 +10,6 @@ const router = express.Router()
 // 注册
 router.post('/api/register', function (req, res, next) {
   const body = req.body
-  // body.password = md5(body.password)
 
   User.findOne({ account: body.account, password: body.password },function (err, data) {
     if (err) {
@@ -42,6 +41,24 @@ router.post('/api/register', function (req, res, next) {
 router.post('/api/getaccount', function (req, res, next) {
 
   User.find(function (err, data) {
+    if (err) {
+      return next(err)
+    }
+
+    res.status(200).json({
+      err_code: 0,
+      message: 'OK',
+      data: data
+    })
+  })
+})
+
+// 修改权限
+router.post('/api/editaccount', function (req, res, next) {
+  const id = req.body.id
+  const status = req.body.status
+
+  User.update({_id: id}, { status: status }, function (err, data) {
     if (err) {
       return next(err)
     }
@@ -118,33 +135,64 @@ router.post('/api/addblog',function(req,res,next){
 
 })
 
-// 获取web文章
-router.post('/api/getblog',function(req,res,next){
+// 获取文章个数
+router.post('/api/bloglength',function(req,res) {
+  const category = req.body.category
 
+  if(req.body.category === undefined){
+    Blog.find(function (err,data) {
+      if (err) {
+        return res.status(500).send('Server error.')
+      }
+      res.status(200).json({
+        err_code: 0,
+        message: 'OK',
+        blogslength: data.length
+      })
+    })
+  }else {
+    Blog.find({category: category}, function (err,data) {
+      if (err) {
+        return res.status(500).send('Server error.')
+      }
+      res.status(200).json({
+        err_code: 0,
+        message: 'OK',
+        blogslength: data.length
+      })
+    })
+  }
+
+})
+
+// 获取文章
+router.post('/api/getblog',function(req,res,next){
+  // console.log(req.body)
+  const start = parseInt(req.body.start)
+  const pagesize = parseInt(req.body.pagesize)
   // 判断前端post是否传参数 决定是传全部文章还是选中的
   if(req.body.category === undefined) {
-    Blog.find(function (err, blogs) {
+      
+    Blog.find().sort({created_time: -1}).skip(start).limit(pagesize).exec(function(err,blogs){
       if (err) {
         return res.status(500).send('Server error.')
       }
-      // 数组取反
-      blogs.reverse()
+      // console.log(blogs)
       res.status(200).json({
         err_code: 0,
         message: 'OK',
         blogs:blogs
       })
     })
-  }
-  else{
+    
+  }else{
     const category = req.body.category
 
-    Blog.find({category: category},function (err, blogs) {
+    Blog.find({category: category}).sort({created_time: -1}).skip(start).limit(pagesize).exec(function (err, blogs) {
       if (err) {
         return res.status(500).send('Server error.')
       }
-      // 数组取反
-      blogs.reverse()
+
       res.status(200).json({
         err_code: 0,
         message: 'OK',
@@ -152,7 +200,7 @@ router.post('/api/getblog',function(req,res,next){
       })
     })
   }
-  
+
 })
 
 // 删除web文章
@@ -193,7 +241,7 @@ router.get('/api/getblog/:id', (req,res,next) =>{
 router.post('/api/updateblog/:id',function(req,res,next){
   // 得到前端请求的id
   const id = req.params.id
-  // 在Blog中查找这个id的数据
+  // 在Blog中查找这个id的数据 更新
   Blog.update({_id: id}, {title: req.body.title, content: req.body.content, category: req.body.category}, (err) => {
     if (err) {
       return res.status(500).send('Server error.')
