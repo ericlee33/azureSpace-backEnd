@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const User = require('./models/user')
 const Blog = require('./models/blog')
 const Comment = require('./models/comment')
@@ -122,8 +123,9 @@ router.post('/api/login', function (req, res, next) {
 // 添加web文章
 router.post('/api/addblog',function(req,res,next){
   const body = req.body
- 
-  new Blog(body).save(function (err, user) {
+  // console.log(body)
+  var blog = new Blog({title: body.title,category: body.category, content: body.content})
+  blog.save(function (err, user) {
     if (err) {
       return next(err)
     }
@@ -222,10 +224,11 @@ router.post('/api/deleteblog',function(req,res,nect){
 // 前端请求文章具体数据
 router.get('/api/getblog/:id', (req,res,next) =>{
   // 得到前端请求的id
-  const id = req.params.id
+  let id = req.params.id
+  id = mongoose.Types.ObjectId(id)
   // console.log(id)
   // 在Blog中查找这个id的数据
-  Blog.find({_id: id}, (err, bloginfo) => {
+  Blog.find({_id:id}, (err, bloginfo) => {
     if (err) {
       return res.status(500).send('Server error.')
     }
@@ -256,10 +259,11 @@ router.post('/api/updateblog/:id',function(req,res,next){
 // ===========================================================文章评论部分===========================================================================
 
 // 上传评论
-router.post('/api/comment/:id',function(req,res,next){
+router.post('/api/comment',function(req,res,next){
   const body = req.body
   // console.log(body)
- 
+  // body.id = mongoose.Types.ObjectId(body._id)
+  // console.log(body)
   new Comment(body).save(function (err, data) {
     if (err) {
       return next(err)
@@ -277,7 +281,7 @@ router.get('/api/comment/:id',function(req,res,next){
   // 得到前端请求的id
   const id = req.params.id
   // 在Blog中查找这个id的数据
-  Comment.find({id: id}, (err, comment) => {
+  Comment.find({id}, (err, comment) => {
     if (err) {
       return res.status(500).send('Server error.')
     }
@@ -307,7 +311,7 @@ router.get('/api/getmessageboard',function(req,res,next){
 
 router.post('/api/addmessageboard',function(req,res,next){
   const body = req.body
-
+  console.log(body)
   new MessageBoard(body).save((err, data) => {
     if (err) {
       return res.status(500).send('Server error.')
