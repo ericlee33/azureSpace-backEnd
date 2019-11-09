@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 
 // 连接数据库
-mongoose.connect('mongodb://localhost/abc',{useNewUrlParser:true},function(err){
+mongoose.connect('mongodb://localhost/test',{useNewUrlParser:true},function(err){
   if(err){
     console.log('Connect error:' + err)
   }else{
@@ -27,6 +27,10 @@ var userSchema = new Schema({
   category: {
     type: String,
     required: true
+  },
+  watcher: {
+    type: Number,
+    default: 0
   }
 })
 
