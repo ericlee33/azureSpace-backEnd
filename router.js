@@ -167,6 +167,8 @@ router.post('/api/bloglength',function(req,res) {
 
 })
 
+// router.post('/api/')
+
 // 获取文章
 router.post('/api/getblog',function(req,res,next){
   // console.log(req.body)
