@@ -5,6 +5,7 @@ const User = require('./models/user')
 const Blog = require('./models/blog')
 const Comment = require('./models/comment')
 const MessageBoard = require('./models/messageboard')
+const Guest = require('./models/detail')
 
 // var storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -370,6 +371,34 @@ router.post('/api/deletemessageboard',function(req,res,next){
       message: 'ok'
     })
   })
+})
+
+// =====================================================访客=======================================================================
+router.get('/api/guest',function(req,res,next){
+
+  Guest.findById('5dc97a722c338bcfcc86458c',(err,data)=>{
+    data.guest++
+    if (err) {
+      return res.status(500).send('Server error.')
+    }
+    res.status(200).json({
+      err_code: 0,
+      message: 'ok',
+      data
+    })
+  })
+  
+  // new Guest().save((err, data) => {
+  //   if (err) {
+  //     return res.status(500).send('Server error.')
+  //   }
+  //   res.status(200).json({
+  //     err_code: 0,
+  //     message: 'ok'
+  //   })
+  // })
+  
+
 })
 
 module.exports = router
