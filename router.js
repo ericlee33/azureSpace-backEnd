@@ -1,9 +1,25 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const multer = require('multer')
 const User = require('./models/user')
 const Blog = require('./models/blog')
 const Comment = require('./models/comment')
 const MessageBoard = require('./models/messageboard')
+
+// var storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, '/uploads')
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, file.fieldname + '-' + Date.now())
+//   }
+// })
+// const upload = multer({
+//   storage:storage
+//   // dest: __dirname + '/uploads'
+// })
+var upload = multer({ dest: __dirname +'/uploads' })
+
 
 const router = express.Router()
 // =========================================================注册,登录部分==================================================================
@@ -125,6 +141,8 @@ router.post('/api/addblog',function(req,res,next){
   const body = req.body
   // console.log(body)
   var blog = new Blog({title: body.title,category: body.category, content: body.content})
+  blog.content = blog.content.replace(/\<img/gi,'<img class="rich-img" ')
+
   blog.save(function (err, user) {
     if (err) {
       return next(err)
@@ -136,6 +154,18 @@ router.post('/api/addblog',function(req,res,next){
   })
 
 })
+
+
+
+// 上传文件
+router.post('/api/upload',upload.single('file'),async(req,res,next)=>{
+  const file = req.file
+  console.log(file)
+  file.url = `http://localhost:3000/uploads/${file.filename}`
+  res.send(file)
+})
+
+
 
 // 获取文章个数
 router.post('/api/bloglength',function(req,res) {
@@ -167,7 +197,6 @@ router.post('/api/bloglength',function(req,res) {
 
 })
 
-// router.post('/api/')
 
 // 获取文章
 router.post('/api/getblog',function(req,res,next){
@@ -234,6 +263,8 @@ router.get('/api/getblog/:id', (req,res,next) =>{
     if (err) {
       return res.status(500).send('Server error.')
     }
+    
+    // console.log(bloginfo[0])
     res.status(200).json({
       err_code: 0,
       message: 'OK',
