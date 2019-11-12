@@ -161,8 +161,8 @@ router.post('/api/addblog',function(req,res,next){
 // 上传文件
 router.post('/api/upload',upload.single('file'),async(req,res,next)=>{
   const file = req.file
-  console.log(file)
-  file.url = `http://localhost:3000/uploads/${file.filename}`
+  // console.log(file)
+  file.url = `http://49.233.176.235:3000/uploads/${file.filename}`
   res.send(file)
 })
 
@@ -261,6 +261,8 @@ router.get('/api/getblog/:id', (req,res,next) =>{
   // console.log(id)
   // 在Blog中查找这个id的数据
   Blog.find({_id:id}, (err, bloginfo) => {
+    let watcher = ++bloginfo[0].watcher
+    Blog.update({_id:id},{watcher: watcher},(err,data)=>{})
     if (err) {
       return res.status(500).send('Server error.')
     }
@@ -345,7 +347,7 @@ router.get('/api/getmessageboard',function(req,res,next){
 
 router.post('/api/addmessageboard',function(req,res,next){
   const body = req.body
-  console.log(body)
+  // console.log(body)
   new MessageBoard(body).save((err, data) => {
     if (err) {
       return res.status(500).send('Server error.')
@@ -377,7 +379,10 @@ router.post('/api/deletemessageboard',function(req,res,next){
 router.get('/api/guest',function(req,res,next){
 
   Guest.findById('5dc97a722c338bcfcc86458c',(err,data)=>{
-    data.guest++
+    ++data.guest
+    // 持久化到数据库中
+    Guest.update({_id:'5dc97a722c338bcfcc86458c'},{guest: data.guest},(err,data)=>{})
+
     if (err) {
       return res.status(500).send('Server error.')
     }
@@ -386,19 +391,8 @@ router.get('/api/guest',function(req,res,next){
       message: 'ok',
       data
     })
+  
   })
-  
-  // new Guest().save((err, data) => {
-  //   if (err) {
-  //     return res.status(500).send('Server error.')
-  //   }
-  //   res.status(200).json({
-  //     err_code: 0,
-  //     message: 'ok'
-  //   })
-  // })
-  
-
 })
 
 module.exports = router

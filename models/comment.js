@@ -27,6 +27,10 @@ var userSchema = new Schema({
   created_time: {
     type: Date,
     default: Date.now
+  },
+  number: {
+    type: Number,
+    default: 0
   }
 })
 
