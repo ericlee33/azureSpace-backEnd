@@ -6,6 +6,7 @@ const Blog = require('./models/blog')
 const Comment = require('./models/comment')
 const MessageBoard = require('./models/messageboard')
 const Guest = require('./models/detail')
+const moment = require('moment')
 
 // var storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
@@ -211,6 +212,12 @@ router.post('/api/getblog',function(req,res,next){
       if (err) {
         return res.status(500).send('Server error.')
       }
+      // console.log(blogs)
+      // for(let i = 0 ; i < blogs.length ; i++ ){
+      //   console.log(typeof blogs[i].created_time)
+      //   console.log(typeof moment(blogs[i].created_time).format('YYYY-MM-DD HH:mm:ss'))
+      //   blogs[i].created_time = new Date(moment(blogs[i].created_time).format('YYYY-MM-DD HH:mm:ss'))
+      // }
       // console.log(blogs)
       res.status(200).json({
         err_code: 0,

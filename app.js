@@ -1,9 +1,10 @@
-var express = require('express')
-var path = require('path')
-var bodyParser = require('body-parser')
-var router = require('./router')
+const express = require('express')
+const path = require('path')
+// 解析body
+const bodyParser = require('body-parser')
+const router = require('./router')
 
-var app = express()
+const app = express()
 
 // 静态目录
 app.use('/public/', express.static(path.join(__dirname, './public/')))
@@ -16,7 +17,6 @@ app.set('views', path.join(__dirname, './views/'))
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
-
 
 // 把路由挂载到 app 中
 app.use(router)
