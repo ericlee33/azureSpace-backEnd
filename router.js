@@ -6,7 +6,7 @@ const Blog = require('./models/blog')
 const Comment = require('./models/comment')
 const MessageBoard = require('./models/messageboard')
 const Guest = require('./models/detail')
-const moment = require('moment')
+// const moment = require('moment')
 
 // var storage = multer.diskStorage({
 //   destination: function (req, file, cb) {
