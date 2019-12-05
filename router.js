@@ -163,7 +163,7 @@ router.post('/api/addblog',function(req,res,next){
 router.post('/api/upload',upload.single('file'),async(req,res,next)=>{
   const file = req.file
   // console.log(file)
-  file.url = `http://49.233.176.235:3000/uploads/${file.filename}`
+  file.url = `http://www.azure33.com/uploads/${file.filename}`
   res.send(file)
 })
 
